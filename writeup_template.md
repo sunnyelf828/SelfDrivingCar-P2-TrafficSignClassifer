@@ -200,3 +200,4 @@ and the accuracy greatly improved:
 
 with rate = 0.001,EPOCH = 20, the validation accuracy is nearly 0.95![4](/Users/chenm/Desktop/4.png)
 
+![visualization](/Users/chenm/Documents/Udacity_SelfDrivingCar/CarND-P2-Traffic-Sign-Classifier/examples/visualization.jpg)
