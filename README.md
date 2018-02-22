@@ -5,26 +5,33 @@ This Project used deep neural networks and convolutional neural networks to clas
 
 Recognition of traffic signs is a challenging real-world problem of high industrial relevance. Traffic sign recognition is a multi-class classication problem with unbalanced class frequencies. Traffic signs can provide a wide range of variations between classes in terms of color, shape, and the presence of pictograms or text. However, there exist subsets of classes (e. g., speed limit signs) that are very similar to each other.The classier has to cope with large variations in visual appearances due to illumination changes, partial occlusions, rotations, weather conditions, etc.
 
-Specifically, I'll train a model to classify traffic signs from the **German Traffic Sign Dataset** which is large and lifelike — contains 43 classes of traffic sign, with more than 50,000 images in total.  The deep neural network model is trained with Tensorflow on AWS EC2.  The model is modified on the basis of the famous 5-layer LeNet implementation. 
+Specifically, I'll train a model to classify traffic signs from the **German Traffic Sign Dataset** which is large and lifelike — contains **43 classes of traffic sign**, with **more than 50,000 images in total**.  The deep neural network model is trained with **Tensorflow on AWS EC2**.  The model is modified on the basis of the famous 5-layer LeNet implementation. 
 
-Before the model is trained, as the traffic sign classes are biased, **augment** is needed to improve the model performance. Common data augmentation techniques include rotation, translation, zoom, flips, and/or color perturbation. These techniques will be used individually or combined.
+Before the model is trained, as the distribution of traffic sign classes are biased, **augment** is needed to improve the model performance. Common data augmentation techniques include rotation, translation, zoom, flips, and/or color perturbation. These techniques will be used individually or combined.
 
-As a first step, I **convert the images to grayscale** because in case with traffic signs, the color is unlikely to give any performance boost. Then, I **normalize the image** data to reduce the number of shades to increase the performance of the model.
+As a first step, I **convert the images to grayscale** to reduce the computational and storage cost while retain most features of traffic sign. In addtion, I **normalize the image** data to increase the performance of the model, making all the pixel value within the range of [0.1,0.9].
 
-The data are split into training set and test set and are trained in a **5 layer CNN model**.
+Then, the data are split into training set and test set and are trained in a **6 layer CNN model**. The model architecture is shown as below:
 
-|                 |                                            |
-| --------------- | ------------------------------------------ |
-| Layer           | Description                                |
-| Input           | 32x32x3 RGB image                          |
-| Convolution 3x3 | 1x1 stride, same padding, outputs 32x32x64 |
-| RELU            |                                            |
-| Max pooling     | 2x2 stride,  outputs 16x16x64              |
-| Convolution 3x3 | etc.                                       |
-| Fully connected | etc.                                       |
-| Softmax         | etc.                                       |
-|                 |                                            |
-|                 |                                            |
+|                                       |                                               |
+| ------------------------------------- | --------------------------------------------- |
+| Layer                                 | Description                                   |
+| Input                                 | 32x32x1 Grayscale image                       |
+| **Layer 1**: Convolution 5x5          | 1x1 stride, valid padding, outputs 28x28x10   |
+| RELU                                  | activation                                    |
+| Max pooling                           | 2x2 stride, valid padding, outputs 14x14x10   |
+| **Layer 2**: Convolution 3x3          | 1x1 stride, valid padding, outputs 12x12x40   |
+| RELU                                  | activation                                    |
+| Dropout                               | **avoid overfitting**, keep probability = 0.6 |
+| **Layer 3**: Convolution 3x3          | 1x1 stride, valid padding, outputs 10x10x80   |
+| RELU                                  | activation                                    |
+| Max pooling                           | 2x2 stride, valid padding, outputs 5x5x80     |
+| Flatten                               | outputs 2000                                  |
+| **Layer 4**: Fully Connected          | outputs 120                                   |
+| RELU                                  | activation                                    |
+| **Layer 5**: Fully Connected          | outputs 84                                    |
+| RELU                                  | activation                                    |
+| **Layer 6**: Fully Connected —>logins | outputs 43                                    |
 
 To train the model, I used the follow global parameters:
 
@@ -32,7 +39,13 @@ To train the model, I used the follow global parameters:
 - Batch size = 128
 - Learning rate = 0.001
 - Optimizer - Adam algorithm (alternative of stochastic gradient descent). Optimizer uses backpropagation to update the network and minimize training loss.
-- Dropout = 0.75 (for training set only)
+- Dropout = 0.6 (for training set only)
+
+The model is validated and evaluated through calculating the accuracy on training set and validation set.A validation set can be used to assess how well the model is performing. A low accuracy on the training and validation sets imply underfitting. A high accuracy on the training set but low accuracy on the validation set implies overfitting.
+
+Once a final model architecture is selected, the accuracy on the test set will be calculated and reported as well.
+
+The model is then used to test on the new images and predict the sign type. Since sometimes there might be false predictions, the softmax probability for the five candidates will be given and the correct classification is usually within these five candidates.
 
 
 
@@ -86,17 +99,7 @@ As a first step, I **convert the images to grayscale** because in case with traf
 
 My final model consisted of the following layers:
 
-| Layer           | Description                                |
-| --------------- | ------------------------------------------ |
-| Input           | 32x32x3 RGB image                          |
-| Convolution 3x3 | 1x1 stride, same padding, outputs 32x32x64 |
-| RELU            |                                            |
-| Max pooling     | 2x2 stride,  outputs 16x16x64              |
-| Convolution 3x3 | etc.                                       |
-| Fully connected | etc.                                       |
-| Softmax         | etc.                                       |
-|                 |                                            |
-|                 |                                            |
+3 Convolutional layers with 3 fully connected layers. More can be seen from the above table.
 
 ##### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
@@ -112,23 +115,13 @@ To train the model, I used the follow global parameters:
 
 My final model results were:
 
-- training set accuracy of ?
-- validation set accuracy of ? 
-- test set accuracy of ?
+- training set accuracy of 0.998
 
-If an iterative approach was chosen:
+- validation set accuracy of 0.966
 
-- What was the first architecture that was tried and why was it chosen?
-- What were some problems with the initial architecture?
-- How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
-- Which parameters were tuned? How were they adjusted and why?
-- What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
+- test set accuracy of 0.944
 
-If a well known architecture was chosen:
-
-- What architecture was chosen?
-- Why did you believe it would be relevant to the traffic sign application?
-- How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
+  ​
 
 #### Test a Model on New Images
 
@@ -144,35 +137,19 @@ The first image might be difficult to classify because ...
 
 Here are the results of the prediction:
 
-| Image         | Prediction    |
-| ------------- | ------------- |
-| Stop Sign     | Stop sign     |
-| U-turn        | U-turn        |
-| Yield         | Yield         |
-| 100 km/h      | Bumpy Road    |
-| Slippery Road | Slippery Road |
+| Image                | Prediction           |
+| -------------------- | -------------------- |
+| Traffic Sign         | Traffic Sign         |
+| Speed limit (30km/h) | Speed limit (30km/h) |
+| Road work            | Road work            |
+| Turn right ahead     | Turn right ahead     |
+| No entry             | No entry             |
 
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
+The model was able to correctly guess 5 of the 5 traffic signs, which gives an accuracy of 100%. 
 
-##### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
 
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
 
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
-
-| Probability | Prediction    |
-| ----------- | ------------- |
-| .60         | Stop sign     |
-| .20         | U-turn        |
-| .05         | Yield         |
-| .04         | Bumpy Road    |
-| .01         | Slippery Road |
-
-For the second image ... 
-
-##### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
-
-##### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
+##### Discuss how you reach to the final model
 
 starting with the neural network same with the LeNet
 
