@@ -1,5 +1,38 @@
 # SelfDrivingCar-P2-TrafficSignClassifer
-This Project is going to use deep neural networks and convolutional neural networks to classify traffic signs. Specifically, I'll train a model to classify traffic signs from the German Traffic Sign Dataset which contains 43 classes of traffic sign. Transfer learning is used to implement the deep learning model to recognize the traffic signs — the model was modified on the basis of the famous LeNet-5 implementation.
+### Summary
+
+This Project used deep neural networks and convolutional neural networks to classify traffic signs. 
+
+Recognition of traffic signs is a challenging real-world problem of high industrial relevance. Traffic sign recognition is a multi-class classication problem with unbalanced class frequencies. Traffic signs can provide a wide range of variations between classes in terms of color, shape, and the presence of pictograms or text. However, there exist subsets of classes (e. g., speed limit signs) that are very similar to each other.The classier has to cope with large variations in visual appearances due to illumination changes, partial occlusions, rotations, weather conditions, etc.
+
+Specifically, I'll train a model to classify traffic signs from the **German Traffic Sign Dataset** which is large and lifelike — contains 43 classes of traffic sign, with more than 50,000 images in total.  The deep neural network model is trained with Tensorflow on AWS EC2.  The model is modified on the basis of the famous 5-layer LeNet implementation. 
+
+Before the model is trained, as the traffic sign classes are biased, **augment** is needed to improve the model performance. Common data augmentation techniques include rotation, translation, zoom, flips, and/or color perturbation. These techniques will be used individually or combined.
+
+As a first step, I **convert the images to grayscale** because in case with traffic signs, the color is unlikely to give any performance boost. Then, I **normalize the image** data to reduce the number of shades to increase the performance of the model.
+
+The data are split into training set and test set and are trained in a **5 layer CNN model**.
+
+|                 |                                            |
+| --------------- | ------------------------------------------ |
+| Layer           | Description                                |
+| Input           | 32x32x3 RGB image                          |
+| Convolution 3x3 | 1x1 stride, same padding, outputs 32x32x64 |
+| RELU            |                                            |
+| Max pooling     | 2x2 stride,  outputs 16x16x64              |
+| Convolution 3x3 | etc.                                       |
+| Fully connected | etc.                                       |
+| Softmax         | etc.                                       |
+|                 |                                            |
+|                 |                                            |
+
+To train the model, I used the follow global parameters:
+
+- Number of epochs = 10. Experimental way: increasing of this parameter doesn't give significant improvements.
+- Batch size = 128
+- Learning rate = 0.001
+- Optimizer - Adam algorithm (alternative of stochastic gradient descent). Optimizer uses backpropagation to update the network and minimize training loss.
+- Dropout = 0.75 (for training set only)
 
 
 
@@ -45,19 +78,9 @@ Here is an exploratory visualization of the data set. It is a bar chart showing 
 
 ##### 1. Describe how you preprocessed the image data. What techniques were chosen and why did you choose these techniques? Consider including images showing the output of each preprocessing technique. Pre-processing refers to techniques such as converting to grayscale, normalization, etc. (OPTIONAL: As described in the "Stand Out Suggestions" part of the rubric, if you generated additional data for training, describe why you decided to generate additional data, how you generated the data, and provide example images of the additional data. Then describe the characteristics of the augmented training set like number of images in the set, number of images for each class, etc.)
 
-As a first step, I decided to convert the images to grayscale because ...
+Before the model is trained, as the traffic sign classes are biased, **augment** is needed to improve the model performance. Common data augmentation techniques include rotation, translation, zoom, flips, and/or color perturbation. These techniques will be used individually or combined.
 
-Here is an example of a traffic sign image before and after grayscaling.
-
-As a last step, I normalized the image data because ...
-
-I decided to generate additional data because ... 
-
-To add more data to the the data set, I used the following techniques because ... 
-
-Here is an example of an original image and an augmented image:
-
-The difference between the original data set and the augmented data set is the following ... 
+As a first step, I **convert the images to grayscale** because in case with traffic signs, the color is unlikely to give any performance boost. Then, I **normalize the image** data to reduce the number of shades to increase the performance of the model.
 
 ##### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
@@ -77,7 +100,13 @@ My final model consisted of the following layers:
 
 ##### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
 
-To train the model, I used an ....
+To train the model, I used the follow global parameters:
+
+- Number of epochs = 10. Experimental way: increasing of this parameter doesn't give significant improvements.
+- Batch size = 128
+- Learning rate = 0.001
+- Optimizer - Adam algorithm (alternative of stochastic gradient descent). Optimizer uses backpropagation to update the network and minimize training loss.
+- Dropout = 0.75 (for training set only)
 
 ##### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
